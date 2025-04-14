@@ -12,5 +12,5 @@ public interface EmployeeDatabaseInterface {
 
     List<Employee> searchEmployee(String jobTitle, String division);
 
-    void updateSalaries(String division, Double percentageIncrease);
+    void updateSalaries(String division, Double percentIncrease);
 }
