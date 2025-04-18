@@ -53,7 +53,7 @@ public class UserInput {
         return employees;
     }
 
-    public void updateEmployeeFromInput(Employee employee) {
+    public Employee updateEmployeeFromInput(Employee employee) {
         Scanner scan = new Scanner(System.in);
 
         System.out.println("\n--- Update Employee Information ---");
@@ -117,9 +117,32 @@ public class UserInput {
         return null;
     }
 
+    public void employeeActions(Employee employee) {
+        Scanner scan = new Scanner(System.in);
+        System.out.println("Select one of the options:");
+        System.out.println("1 - Generate Employee's Pay History");
+        System.out.println("2 - Update Employee's Info");
+        System.out.println("3 - Update Employee's Salary");
+        System.out.println("4 - Go back to previous menu");
+        int choice = scan.nextInt();
+        switch (choice) {
+            case 1: reportGenerator.generatePayHistory(employee.getEmployeeId()); break;
+            case 2: employee = updateEmployeeFromInput(employee); break;
+            case 3: employee = updateEmployeeSalary(employee); break;
+            default: 
+        }
+    }
+
+    public Employee updateEmployeeSalary(Employee employee) {
+        Scanner scan = new Scanner(System.in);
+        System.out.println("What p");
+    }
+
     public void mainMenu() {
         /*selection menu, search employee info? update employee? well you need to first search the employee then select the employee
         print pay statement for employee? well first you need to search the employee then select the employee
+        add an employee?
+        generate pay statements by divison or title?
         etc,*/
     }
 
