@@ -1,7 +1,6 @@
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import Employee from employee;
 
 public class EmployeeDatabaseImplementation implements EmployeeDatabaseInterface {
 
@@ -20,7 +19,7 @@ public class EmployeeDatabaseImplementation implements EmployeeDatabaseInterface
                         newEmployee.getEmployeeId() + ", '" +
                         newEmployee.getFirstName() + "', '" +
                         newEmployee.getLastName() + "', '" +
-                        newEmployee.getSsn() + "', '" +
+                        newEmployee.getSSN() + "', '" +
                         newEmployee.getJobTitle() + "', '" +
                         newEmployee.getDivision() + "', " +
                         newEmployee.getSalary() + ")";
@@ -45,7 +44,7 @@ public class EmployeeDatabaseImplementation implements EmployeeDatabaseInterface
             String sql = "UPDATE employees SET " +
                     "first_name = '" + employee.getFirstName() + "', " +
                     "last_name = '" + employee.getLastName() + "', " +
-                    "ssn = '" + employee.getSsn() + "', " +
+                    "ssn = '" + employee.getSSN() + "', " +
                     "job_title = '" + employee.getJobTitle() + "', " +
                     "division = '" + employee.getDivision() + "', " +
                     "salary = " + employee.getSalary() +
@@ -81,7 +80,6 @@ public class EmployeeDatabaseImplementation implements EmployeeDatabaseInterface
             String query = "SELECT * FROM employees WHERE employee_id = " + employeeId;
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery(query);
-
             if (result.next()) {
                 employee = new Employee(
                     result.getInt("employee_id"),
@@ -93,7 +91,6 @@ public class EmployeeDatabaseImplementation implements EmployeeDatabaseInterface
                     result.getDouble("salary")
                 );
             }
-
             result.close();
             statement.close();
         } catch (SQLException e) {
@@ -103,13 +100,13 @@ public class EmployeeDatabaseImplementation implements EmployeeDatabaseInterface
     }
 
     @Override
-    public List<Employee> searchEmployee(String jobTitle, String division) {
+    public List<Employee> searchByDivisionAndTitle(String jobTitle, String division) {
         List<Employee> employees = new ArrayList<>();
         try {
             String sql = "SELECT * FROM employees WHERE job_title = '" + jobTitle + "' AND division = '" + division + "'";
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery(sql);
-            while (rs.next()) {
+            while (result.next()) {
                 int id = result.getInt("employee_id");
                 String firstName = result.getString("first_name");
                 String lastName = result.getString("last_name");
@@ -128,7 +125,6 @@ public class EmployeeDatabaseImplementation implements EmployeeDatabaseInterface
         return employees;
     }
 
-
     @Override
     public void updateSalaries(String division, Double percentIncrease) {
         try {
@@ -140,6 +136,59 @@ public class EmployeeDatabaseImplementation implements EmployeeDatabaseInterface
         } catch (SQLException e) {
             e.printStackTrace();
         } 
+    }
+
+    public List<Employee> searchEmployee(Integer id, String ssn, String firstName, String lastName) {
+        List<Employee> employees = new ArrayList<>();
+        PreparedStatement statement = null;
+        ResultSet result = null;
+        try {
+            StringBuilder query = new StringBuilder("SELECT * FROM employees WHERE 1=1");
+            List<Object> parameters = new ArrayList<>();
+            if (id != null) {
+                query.append(" AND employee_id = ?");
+                parameters.add(id);
+            }
+            if (ssn != null && !ssn.isEmpty()) {
+                query.append(" AND ssn = ?");
+                parameters.add(ssn);
+            }
+            if (firstName != null && !firstName.isEmpty()) {
+                query.append(" AND first_name = ?");
+                parameters.add(firstName);
+            }
+            if (lastName != null && !lastName.isEmpty()) {
+                query.append(" AND last_name = ?");
+                parameters.add(lastName);
+            }
+            statement = connection.prepareStatement(query.toString());
+            for (int i = 0; i < parameters.size(); i++) {
+                statement.setObject(i + 1, parameters.get(i));
+            }
+            result = statement.executeQuery();
+            while (result.next()) {
+                Employee employee = new Employee(
+                    result.getInt("employee_id"),
+                    result.getString("first_name"),
+                    result.getString("last_name"),
+                    result.getString("ssn"),
+                    result.getString("job_title"),
+                    result.getString("division"),
+                    result.getDouble("salary")
+                );
+                employees.add(employee);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (result != null) result.close();
+                if (statement != null) statement.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+        return employees;
     }
 
 }

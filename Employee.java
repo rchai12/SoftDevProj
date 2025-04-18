@@ -43,7 +43,10 @@ public class Employee {
     public double updateSalary(double newSalary){
         return newSalary;
     }
-
+    public String getFullName() {
+        return firstName + " " + lastName;
+    }
+    
 }
 
 

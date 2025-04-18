@@ -10,7 +10,9 @@ public interface EmployeeDatabaseInterface {
 
     Employee getEmployeeById(int employeeId);
 
-    List<Employee> searchEmployee(String jobTitle, String division);
+    List<Employee> searchByDivisionAndTitle(String jobTitle, String division);
 
     void updateSalaries(String division, Double percentIncrease);
+
+    List<Employee> searchEmployee(Integer id, String ssn, String firstName, String lastName);
 }

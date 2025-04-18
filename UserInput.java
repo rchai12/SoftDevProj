@@ -1,5 +1,11 @@
 import java.util.Scanner;
 public class UserInput {
+    ReportGenerator reportGenerator;
+
+    public UserInput (ReportGenerator rg) {
+        this.reportGenerator = rg;
+    }
+
     public Employee getEmployeeInfo() {
         Scanner scan = new Scanner(System.in);
 
@@ -16,16 +22,7 @@ public class UserInput {
         System.out.println("Enter your SSN: ");
         String SSN = scan.nextLine();
 
-        System.out.println("Enter your Job Title: ");
-        String job_title = scan.nextLine();
-
-        System.out.println("Entre your division: ");
-        String division = scan.nextLine();
-
-        System.out.println("What is your monthly salary: ");
-        double salary = scan.nextDouble();
-
-        return new Employee(id, first_name, last_name, SSN, job_title, division, salary);
+        this.reportGenerator.generateEmployeeInfo(id, first_name, last_name, SSN);
     }
 
     public void getSearchParameters() {
