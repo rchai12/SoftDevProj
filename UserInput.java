@@ -119,18 +119,21 @@ public class UserInput {
 
     public void employeeActions(Employee employee) {
         Scanner scan = new Scanner(System.in);
-        System.out.println("Select one of the options:");
-        System.out.println("1 - Generate Employee's Pay History");
-        System.out.println("2 - Update Employee's Info");
-        System.out.println("3 - Update Employee's Salary");
-        System.out.println("4 - Go back to previous menu");
-        int choice = scan.nextInt();
-        switch (choice) {
-            case 1: reportGenerator.generatePayHistory(employee.getEmployeeId()); break;
-            case 2: employee = updateEmployeeFromInput(employee); break;
-            case 3: employee = updateEmployeeSalary(employee); break;
-            default: 
-        }
+        int choice;
+        do {
+            System.out.println("Select one of the options:");
+            System.out.println("1 - Generate Employee's Pay History");
+            System.out.println("2 - Update Employee's Info");
+            System.out.println("3 - Update Employee's Salary");
+            System.out.println("4 - Go back to previous menu");
+            choice = scan.nextInt();
+            switch (choice) {
+                case 1: reportGenerator.generatePayHistory(employee.getEmployeeId()); break;
+                case 2: employee = updateEmployeeFromInput(employee); break;
+                case 3: employee = updateEmployeeSalary(employee); break;
+                default: 
+            }
+        } while (choice != 4);
     }
 
     public Employee updateEmployeeSalary(Employee employee) {
