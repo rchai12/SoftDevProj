@@ -1,11 +1,20 @@
 public class Employee {
-    public int employeeId;
+    public Integer employeeId;
     public String firstName;
     public String lastName;
     public String SSN;
     public String jobTitle;
     public String division;
     public double salary;
+
+    public Employee(String firstName, String lastName, String SSN, String jobTitle, String division, double salary) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.SSN = SSN;
+        this.jobTitle = jobTitle;
+        this.division = division;
+        this.salary = salary;
+    }
 
     public Employee(int employeeId, String firstName, String lastName, String SSN, String jobTitle, String division, double salary) {
         this.employeeId = employeeId;
@@ -46,7 +55,11 @@ public class Employee {
     public String getFullName() {
         return firstName + " " + lastName;
     }
-    
+
+    public void setEmployeeId(Integer id) {
+        this.employeeId = id;
+    }
+
 }
 
 

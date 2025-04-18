@@ -11,30 +11,45 @@ public class EmployeeDatabaseImplementation implements EmployeeDatabaseInterface
     }
 
     @Override
-    public void addEmployee(Employee newEmployee) {
-        Statement statement = null;
+    public Employee addEmployee(Employee newEmployee) {
+        PreparedStatement statement = null;
+        ResultSet generatedKeys = null;
         try {
-            statement = connection.createStatement();
-            String sql = "INSERT INTO employees (employee_id, first_name, last_name, ssn, job_title, division, salary) VALUES (" +
-                        newEmployee.getEmployeeId() + ", '" +
-                        newEmployee.getFirstName() + "', '" +
-                        newEmployee.getLastName() + "', '" +
-                        newEmployee.getSSN() + "', '" +
-                        newEmployee.getJobTitle() + "', '" +
-                        newEmployee.getDivision() + "', " +
-                        newEmployee.getSalary() + ")";
-            statement.executeUpdate(sql);
+            String sql = "INSERT INTO employees (first_name, last_name, ssn, job_title, division, salary) " +
+                        "VALUES (?, ?, ?, ?, ?, ?)";
+
+            statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            statement.setString(1, newEmployee.getFirstName());
+            statement.setString(2, newEmployee.getLastName());
+            statement.setString(3, newEmployee.getSSN());
+            statement.setString(4, newEmployee.getJobTitle());
+            statement.setString(5, newEmployee.getDivision());
+            statement.setDouble(6, newEmployee.getSalary());
+
+            int affectedRows = statement.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("Adding employee failed, no rows affected.");
+            }
+            generatedKeys = statement.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                int generatedId = generatedKeys.getInt(1);
+                newEmployee.setEmployeeId(generatedId);
+                //System.out.println("Employee added with ID: " + generatedId);
+            } else {
+                throw new SQLException("Adding employee failed, no ID obtained.");
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
             try {
+                if (generatedKeys != null) generatedKeys.close();
                 if (statement != null) statement.close();
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
         }
+        return newEmployee;
     }
-
 
     @Override
     public void updateEmployee(Employee employee) {
@@ -59,7 +74,7 @@ public class EmployeeDatabaseImplementation implements EmployeeDatabaseInterface
                 e.printStackTrace();
             }
         }
-}
+    }
 
     @Override
     public void deleteEmployee(int employeeId) {

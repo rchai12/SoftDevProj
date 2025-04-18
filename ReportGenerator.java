@@ -63,7 +63,7 @@ public class ReportGenerator {
         }
     }
 
-    public void generateEmployeeInfo(int id, String first_name, String last_name, String SSN) {
+    public List<Employee> generateEmployeeInfo(int id, String first_name, String last_name, String SSN) {
         List<Employee> employees = db.searchEmployee(
             id > 0 ? id : null,
             (SSN != null && !SSN.isEmpty()) ? SSN : null,
@@ -84,8 +84,32 @@ public class ReportGenerator {
                 System.out.println("Salary: $" + emp.salary);
             }
         }
+        return employees;
     }
 
+    public void addEmployeeInfo(Employee newEmployee) {
+        newEmployee = db.addEmployee(newEmployee);
+        System.out.println("Added the employee with info");
+        System.out.println("-----------------------------------");
+        System.out.println("ID: " + newEmployee.employeeId);
+        System.out.println("Name: " + newEmployee.firstName + " " + newEmployee.lastName);
+        System.out.println("SSN: " + newEmployee.SSN);
+        System.out.println("Job Title: " + newEmployee.jobTitle);
+        System.out.println("Division: " + newEmployee.division);
+        System.out.println("Salary: $" + newEmployee.salary);
+    }
+
+    public void updatedEmployeeInfo(Employee updatedEmployee) {
+        db.updateEmployee(updatedEmployee);
+        System.out.println("Updated the employee with info");
+        System.out.println("-----------------------------------");
+        System.out.println("ID: " + updatedEmployee.employeeId);
+        System.out.println("Name: " + updatedEmployee.firstName + " " + updatedEmployee.lastName);
+        System.out.println("SSN: " + updatedEmployee.SSN);
+        System.out.println("Job Title: " + updatedEmployee.jobTitle);
+        System.out.println("Division: " + updatedEmployee.division);
+        System.out.println("Salary: $" + updatedEmployee.salary);
+    }
 }
 
 

@@ -2,7 +2,7 @@ import java.util.List;
 
 public interface EmployeeDatabaseInterface {
 
-    void addEmployee(Employee newEmployee);
+    Employee addEmployee(Employee newEmployee);
 
     void updateEmployee(Employee employee);
 
