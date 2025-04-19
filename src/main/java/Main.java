@@ -6,7 +6,7 @@ public class Main {
     public static void main(String[] args) {
         try {
             Connection connection = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/yourdatabase", 
+                "jdbc:mysql://localhost:3306/yourdatabasename", 
                 "yourusername", 
                 "yourpassword"
             );
