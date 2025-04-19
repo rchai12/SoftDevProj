@@ -164,7 +164,7 @@ public class EmployeeDatabaseImplementation implements EmployeeDatabaseInterface
     public List<Employee> searchByDivisionAndTitle(String jobTitle, String division) {
         List<Employee> employees = new ArrayList<>();
         try {
-            String sql = "SELECT * FROM employees WHERE job_title = '" + jobTitle + "' AND division = '" + division + "'";
+            String sql = "SELECT * FROM employees WHERE job_title = '" + jobTitle + "' OR division = '" + division + "'";
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery(sql);
             while (result.next()) {
@@ -185,6 +185,7 @@ public class EmployeeDatabaseImplementation implements EmployeeDatabaseInterface
         }
         return employees;
     }
+
 
     @Override
     public List<Employee> updateDivisionSalaries(String division, Double percentIncrease, Double minimum) {

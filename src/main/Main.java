@@ -1,19 +1,22 @@
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class Main {
     public static void main(String[] args) {
         try {
             Connection connection = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/your_database_name", 
-                "your_username", 
-                "your_password"
+                "jdbc:mysql://localhost:3306/yourdatabasehere", 
+                "yourusernamehere", 
+                "youpasswordhere"
             );
 
             EmployeeDatabaseImplementation dbImpl = new EmployeeDatabaseImplementation(connection);
             ReportGenerator reportGen = new ReportGenerator(dbImpl);
 
-            // You can now call methods on reportGen, e.g.:
-            // reportGen.generateEmployeeInfo(...);
+            UserInput ui = new UserInput(reportGen);
+
+            ui.mainMenu();
 
         } catch (SQLException e) {
             e.printStackTrace();
