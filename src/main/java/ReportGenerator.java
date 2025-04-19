@@ -147,7 +147,7 @@ public class ReportGenerator {
         System.out.println("Salary: $" + employee.getSalary());
     }
 
-    public void updateDivisionSalaries(String division, double percentIncrease, double minimum) {
+    public void updateDivisionSalaries(String division, double percentIncrease, Double minimum) {
         List<Employee> employees = db.updateDivisionSalaries(division, percentIncrease, minimum);
         System.out.println("Updated these employees in the " + division + " Division");
         for (Employee emp : employees) {
@@ -156,7 +156,7 @@ public class ReportGenerator {
         }
     }
 
-    public void updateJobTitleSalaries(String jobTitle, double percentIncrease, double minimum) {
+    public void updateJobTitleSalaries(String jobTitle, double percentIncrease, Double minimum) {
         List<Employee> employees = db.updateJobTitleSalaries(jobTitle, percentIncrease, minimum);
         System.out.println("Updated these employees with the Job Title " + jobTitle);
         for (Employee emp : employees) {
@@ -165,7 +165,7 @@ public class ReportGenerator {
         }
     }
 
-    public void updateAllSalaries(double percentIncrease, double minimum) {
+    public void updateAllSalaries(double percentIncrease, Double minimum) {
         List<Employee> employees = db.updateAllSalaries(percentIncrease, minimum);
         System.out.println("Updated these employee salaries");
         for (Employee emp : employees) {

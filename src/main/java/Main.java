@@ -1,12 +1,14 @@
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class Main {
     public static void main(String[] args) {
         try {
             Connection connection = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/sdproj", 
-                "root", 
-                "boSE@2080&k"
+                "jdbc:mysql://localhost:3306/yourdatabase", 
+                "yourusername", 
+                "yourpassword"
             );
 
             EmployeeDatabaseImplementation dbImpl = new EmployeeDatabaseImplementation(connection);

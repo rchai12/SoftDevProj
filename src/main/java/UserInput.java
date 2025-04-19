@@ -255,6 +255,8 @@ public class UserInput {
             System.out.println("1 - Increase all employee salaries, optional minimum salary threshhold");
             System.out.println("2 - Increase all employee salaries in a division, optional minimum salary threshhold");
             System.out.println("3 - Increase all employee salaries of a specific job title, optional minimum salary threshhold");
+            System.out.println("4 - Go back to previous menu");
+            System.out.print("Enter your choice (1 - 4): ");
             while (!scan.hasNextInt()) {
                 System.out.print("Invalid input. Please enter a number between 1 and 12: ");
                 scan.next();
