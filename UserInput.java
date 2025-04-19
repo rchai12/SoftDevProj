@@ -21,10 +21,10 @@ public class UserInput {
         String SSN = scan.nextLine();
 
         System.out.println("Enter Employee's Job Title: ");
-        String job_title = scan.nextLine();
+        String job_title = selectJobTitle();
 
         System.out.println("Entre Employee's division: ");
-        String division = scan.nextLine();
+        String division = selectDivision();
 
         System.out.println("Enter Employee's monthly salary: ");
         double salary = scan.nextDouble();
@@ -57,44 +57,40 @@ public class UserInput {
         Scanner scan = new Scanner(System.in);
 
         System.out.println("\n--- Update Employee Information ---");
-        System.out.println("(Leave any field blank to keep current value)");
+        System.out.println("(Leave any field blank to keep current value, except for jobtitle and division)");
 
-        System.out.print("Current First Name [" + employee.firstName + "], New First Name: ");
+        System.out.print("Current First Name [" + employee.getFirstName() + "], New First Name: ");
         String firstName = scan.nextLine();
         if (!firstName.trim().isEmpty()) {
-            employee.firstName = firstName;
+            employee.setFirstName(firstName);
         }
 
-        System.out.print("Current Last Name [" + employee.lastName + "], New Last name: ");
+        System.out.print("Current Last Name [" + employee.getLastName() + "], New Last name: ");
         String lastName = scan.nextLine();
         if (!lastName.trim().isEmpty()) {
-            employee.lastName = lastName;
+            employee.setLastName(lastName);
         }
 
-        System.out.print("Current SSN [" + employee.SSN + "], New SSN: ");
+        System.out.print("Current SSN [" + employee.getSSN() + "], New SSN: ");
         String ssn = scan.nextLine();
         if (!ssn.trim().isEmpty()) {
-            employee.SSN = ssn;
+            employee.setSSN(ssn);
         }
 
-        System.out.print("Current Job Title [" + employee.jobTitle + "], New Job Title: ");
-        String jobTitle = scan.nextLine();
-        if (!jobTitle.trim().isEmpty()) {
-            employee.jobTitle = jobTitle;
-        }
+        System.out.print("Current Job Title [" + employee.getJobTitle() + "], New Job Title: ");
+        String jobTitle = selectJobTitle();
+        employee.setJobTitle(jobTitle);
 
-        System.out.print("Current Division [" + employee.division + "], New Division: ");
-        String division = scan.nextLine();
-        if (!division.trim().isEmpty()) {
-            employee.division = division;
-        }
+        System.out.print("Current Division [" + employee.getDivision() + "], New Division: ");
+        String division = selectDivision();
+        employee.setDivision(division);
 
-        System.out.print("Current Salary [" + employee.salary + "], New Salary: ");
+        System.out.print("Current Salary [" + employee.getSalary() + "], New Salary: ");
         String salaryInput = scan.nextLine();
         if (!salaryInput.trim().isEmpty()) {
             try {
                 double newSalary = Double.parseDouble(salaryInput);
-                employee.salary = newSalary;
+                employee.setSalary(newSalary);
             } catch (NumberFormatException e) {
                 System.out.println("Invalid salary input. Salary not updated.");
             }
@@ -236,9 +232,7 @@ public class UserInput {
                 case 10: month = "October"; break;
                 case 11: month = "November"; break;
                 case 12: month = "December"; break;
-                default:
-                    System.out.println("Invalid choice. Please enter a number between 1 and 12.");
-                    break;
+                default: System.out.println("Invalid choice. Please enter a number between 1 and 12."); break;
             }
         } while (choice < 1 || choice > 12);
         return month;
@@ -269,43 +263,7 @@ public class UserInput {
 
     public void increaseSalaryByDivision() {
         Scanner scan = new Scanner(System.in);
-        String division = "";
-        int choice;
-        do {
-            System.out.println("Select the division to apply salary increase:");
-            System.out.println("1 - Engineering");
-            System.out.println("2 - Sales");
-            System.out.println("3 - Human Resources");
-            System.out.println("4 - Finance");
-            System.out.println("5 - Marketing");
-            System.out.println("6 - Information Technology");
-            System.out.println("7 - Administration");
-            System.out.println("8 - Legal");
-            System.out.println("9 - Operations");
-            System.out.println("10 - Customer Support");
-            System.out.print("Enter your choice (1-10): ");
-
-            while (!scan.hasNextInt()) {
-                System.out.print("Invalid input. Please enter a number between 1 and 10: ");
-                scan.next();
-            }
-            choice = scan.nextInt();
-            switch (choice) {
-                case 1: division = "Engineering"; break;
-                case 2: division = "Sales"; break;
-                case 3: division = "Human Resources"; break;
-                case 4: division = "Finance"; break;
-                case 5: division = "Marketing"; break;
-                case 6: division = "Information Technology"; break;
-                case 7: division = "Administration"; break;
-                case 8: division = "Legal"; break;
-                case 9: division = "Operations"; break;
-                case 10: division = "Customer Support"; break;
-                default:
-                    System.out.println("Invalid choice. Please select a valid division.");
-                    choice = -1;
-            }
-        } while (choice == -1);
+        String division = selectDivision();
         System.out.print("Enter the percentage increase (e.g., 5 for 5%): ");
         while (!scan.hasNextDouble()) {
             System.out.print("Invalid input. Please enter a valid percentage: ");
@@ -324,10 +282,49 @@ public class UserInput {
 
     public void increaseSalaryByJobTitle() {
         Scanner scan = new Scanner(System.in);
+        String jobTitle = selectJobTitle();
+        System.out.print("Enter the percentage increase (e.g., 5 for 5%): ");
+        while (!scan.hasNextDouble()) {
+            System.out.print("Invalid input. Please enter a valid percentage: ");
+            scan.next();
+        }
+        Double percentIncrease = scan.nextDouble();
+        System.out.print("Enter minimum salary threshold (or 0 if none): ");
+        while (!scan.hasNextDouble()) {
+            System.out.print("Invalid input. Please enter a valid number: ");
+            scan.next();
+        }
+        double minInput = scan.nextDouble();
+        Double minimum = (minInput > 0) ? minInput : null;
+        reportGenerator.updateJobTitleSalaries(jobTitle, percentIncrease, minimum);
+    }
+
+
+    public void increaseAllSalaries() {
+        Scanner scan = new Scanner(System.in);
+        Double percentIncrease = 0.0;
+        System.out.print("Enter the percentage increase (e.g., 5 for 5%): ");
+        while (!scan.hasNextDouble()) {
+            System.out.print("Invalid input. Please enter a valid percentage: ");
+            scan.next();
+        }
+        percentIncrease = scan.nextDouble();
+        System.out.print("Enter minimum salary threshold (or 0 if none): ");
+        while (!scan.hasNextDouble()) {
+            System.out.print("Invalid input. Please enter a valid number: ");
+            scan.next();
+        }
+        double minInput = scan.nextDouble();
+        Double minimum = (minInput > 0) ? minInput : null;
+        reportGenerator.updateAllSalaries(percentIncrease, minimum);
+    }
+
+    public String selectJobTitle() {
+        Scanner scan = new Scanner(System.in);
         String jobTitle = "";
         int choice;
         do {
-            System.out.println("Select the job title to apply salary increase:");
+            System.out.println("Select the job title: ");
             System.out.println("1 - Sales Representative");
             System.out.println("2 - Account Executive");
             System.out.println("3 - Marketing Specialist");
@@ -375,44 +372,49 @@ public class UserInput {
                 case 18: jobTitle = "Compliance Officer"; break;
                 case 19: jobTitle = "Operations Manager"; break;
                 case 20: jobTitle = "Customer Support Rep"; break;
-                default:
-                    System.out.println("Invalid choice. Please select a valid job title.");
-                    choice = -1;
+                default: System.out.println("Invalid choice. Please select a valid job title.");
             }
         } while (choice == -1);
-        System.out.print("Enter the percentage increase (e.g., 5 for 5%): ");
-        while (!scan.hasNextDouble()) {
-            System.out.print("Invalid input. Please enter a valid percentage: ");
-            scan.next();
-        }
-        Double percentIncrease = scan.nextDouble();
-        System.out.print("Enter minimum salary threshold (or 0 if none): ");
-        while (!scan.hasNextDouble()) {
-            System.out.print("Invalid input. Please enter a valid number: ");
-            scan.next();
-        }
-        double minInput = scan.nextDouble();
-        Double minimum = (minInput > 0) ? minInput : null;
-        reportGenerator.updateJobTitleSalaries(jobTitle, percentIncrease, minimum);
+        return jobTitle;
     }
 
-
-    public void increaseAllSalaries() {
+    public String selectDivision () {
         Scanner scan = new Scanner(System.in);
-        Double percentIncrease = 0.0;
-        System.out.print("Enter the percentage increase (e.g., 5 for 5%): ");
-        while (!scan.hasNextDouble()) {
-            System.out.print("Invalid input. Please enter a valid percentage: ");
-            scan.next();
-        }
-        percentIncrease = scan.nextDouble();
-        System.out.print("Enter minimum salary threshold (or 0 if none): ");
-        while (!scan.hasNextDouble()) {
-            System.out.print("Invalid input. Please enter a valid number: ");
-            scan.next();
-        }
-        double minInput = scan.nextDouble();
-        Double minimum = (minInput > 0) ? minInput : null;
-        reportGenerator.updateAllSalaries(percentIncrease, minimum);
+        String division = "";
+        int choice;
+        do {
+            System.out.println("Select the division:");
+            System.out.println("1 - Engineering");
+            System.out.println("2 - Sales");
+            System.out.println("3 - Human Resources");
+            System.out.println("4 - Finance");
+            System.out.println("5 - Marketing");
+            System.out.println("6 - Information Technology");
+            System.out.println("7 - Administration");
+            System.out.println("8 - Legal");
+            System.out.println("9 - Operations");
+            System.out.println("10 - Customer Support");
+            System.out.print("Enter your choice (1-10): ");
+
+            while (!scan.hasNextInt()) {
+                System.out.print("Invalid input. Please enter a number between 1 and 10: ");
+                scan.next();
+            }
+            choice = scan.nextInt();
+            switch (choice) {
+                case 1: division = "Engineering"; break;
+                case 2: division = "Sales"; break;
+                case 3: division = "Human Resources"; break;
+                case 4: division = "Finance"; break;
+                case 5: division = "Marketing"; break;
+                case 6: division = "Information Technology"; break;
+                case 7: division = "Administration"; break;
+                case 8: division = "Legal"; break;
+                case 9: division = "Operations"; break;
+                case 10: division = "Customer Support"; break;
+                default: System.out.println("Invalid choice. Please select a valid division.");
+            }
+        } while (choice == -1);
+        return division;
     }
 }

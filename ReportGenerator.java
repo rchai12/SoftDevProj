@@ -28,7 +28,28 @@ public class ReportGenerator {
         System.out.println("=== Pay by Job Title for " + month + " ===");
 
         // Hardcoded job titles to simulate a real report
-        String[] jobTitles = {"Engineer", "Manager", "HR"};
+        String[] jobTitles = {
+            "Sales Representative",
+            "Account Executive",
+            "Marketing Specialist",
+            "PR Representative",
+            "Software Engineer",
+            "Data Analyst",
+            "QA Engineer",
+            "IT Support Technician",
+            "System Administrator",
+            "Financial Analyst",
+            "Accountant",
+            "Auditor",
+            "HR Specialist",
+            "Recruiter",
+            "Manager",
+            "Office Manager",
+            "Legal Counsel",
+            "Compliance Officer",
+            "Operations Manager",
+            "Customer Support Rep"
+        };
 
         for (String jobTitle : jobTitles) {
             // Fetch all employees with this job title across all divisions
@@ -48,7 +69,18 @@ public class ReportGenerator {
         System.out.println("=== Pay by Division for " + month + " ===");
 
         // Hardcoded divisions
-        String[] divisions = {"Tech", "HR", "Marketing"};
+        String[] divisions = {
+            "Engineering",
+            "Sales",
+            "Human Resources",
+            "Finance",
+            "Marketing",
+            "Information Technology",
+            "Administration",
+            "Legal",
+            "Operations",
+            "Customer Support"
+        };
 
         for (String div : divisions) {
             // Fetch all employees with any job title in this division

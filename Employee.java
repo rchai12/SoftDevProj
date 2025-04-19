@@ -66,6 +66,29 @@ public class Employee {
         this.salary *= (increase + 1);
     }
 
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public void setSSN(String SSN) {
+        this.SSN = SSN;
+    }
+
+    public void setJobTitle(String jobTitle) {
+        this.jobTitle = jobTitle;
+    }
+
+    public void setDivision(String division) {
+        this.division = division;
+    }
+
+    public void setSalary(double salary) {
+        this.salary = salary;
+    }
 }
 
 
