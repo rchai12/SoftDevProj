@@ -40,6 +40,7 @@ public class Employee {
     public String getLastName(){
         return lastName;
     }
+
     public String getJobTitle(){
         return jobTitle;
     }
@@ -52,12 +53,17 @@ public class Employee {
     public double updateSalary(double newSalary){
         return newSalary;
     }
+
     public String getFullName() {
         return firstName + " " + lastName;
     }
 
     public void setEmployeeId(Integer id) {
         this.employeeId = id;
+    }
+
+    public void increaseSalary(double increase) {
+        this.salary *= (increase + 1);
     }
 
 }

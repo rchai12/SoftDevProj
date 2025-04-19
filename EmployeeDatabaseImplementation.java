@@ -52,41 +52,87 @@ public class EmployeeDatabaseImplementation implements EmployeeDatabaseInterface
     }
 
     @Override
-    public void updateEmployee(Employee employee) {
-        Statement statement = null;
+    public Employee updateEmployee(Employee employee) {
+        PreparedStatement updateStmt = null;
+        PreparedStatement selectStmt = null;
+        ResultSet resultSet = null;
+        Employee updatedEmployee = null;
+
         try {
-            statement = connection.createStatement();
-            String sql = "UPDATE employees SET " +
-                    "first_name = '" + employee.getFirstName() + "', " +
-                    "last_name = '" + employee.getLastName() + "', " +
-                    "ssn = '" + employee.getSSN() + "', " +
-                    "job_title = '" + employee.getJobTitle() + "', " +
-                    "division = '" + employee.getDivision() + "', " +
-                    "salary = " + employee.getSalary() +
-                    " WHERE employee_id = " + employee.getEmployeeId();
-            statement.executeUpdate(sql);
+            String updateQuery = "UPDATE employees SET first_name = ?, last_name = ?, ssn = ?, job_title = ?, division = ?, salary = ? WHERE employee_id = ?";
+            updateStmt = connection.prepareStatement(updateQuery);
+            updateStmt.setString(1, employee.getFirstName());
+            updateStmt.setString(2, employee.getLastName());
+            updateStmt.setString(3, employee.getSSN());
+            updateStmt.setString(4, employee.getJobTitle());
+            updateStmt.setString(5, employee.getDivision());
+            updateStmt.setDouble(6, employee.getSalary());
+            updateStmt.setInt(7, employee.getEmployeeId());
+            updateStmt.executeUpdate();
+
+            String selectQuery = "SELECT * FROM employees WHERE employee_id = ?";
+            selectStmt = connection.prepareStatement(selectQuery);
+            selectStmt.setInt(1, employee.getEmployeeId());
+            resultSet = selectStmt.executeQuery();
+
+            if (resultSet.next()) {
+                updatedEmployee = new Employee(
+                    resultSet.getInt("employee_id"),
+                    resultSet.getString("first_name"),
+                    resultSet.getString("last_name"),
+                    resultSet.getString("ssn"),
+                    resultSet.getString("job_title"),
+                    resultSet.getString("division"),
+                    resultSet.getDouble("salary")
+                );
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
             try {
-                if (statement != null) statement.close();
+                if (updateStmt != null) updateStmt.close();
+                if (selectStmt != null) selectStmt.close();
+                if (resultSet != null) resultSet.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
+        return updatedEmployee;
     }
 
+
     @Override
-    public void deleteEmployee(int employeeId) {
+    public Employee deleteEmployee(int employeeId) {
+        Employee employee = null;
         try {
-            String query = "DELETE FROM employees WHERE employee_id = "+ employeeId;
-            Statement statement = connection.createStatement();
-            statement.executeUpdate(query);
-            statement.close();
+            String selectQuery = "SELECT * FROM employees WHERE employee_id = " + employeeId;
+            Statement selectStmt = connection.createStatement();
+            ResultSet resultSet = selectStmt.executeQuery(selectQuery);
+
+            if (resultSet.next()) {
+                employee = new Employee(
+                    resultSet.getInt("employee_id"),
+                    resultSet.getString("first_name"),
+                    resultSet.getString("last_name"),
+                    resultSet.getString("ssn"),
+                    resultSet.getString("job_title"),
+                    resultSet.getString("division"),
+                    resultSet.getDouble("salary")
+                );
+            }
+            resultSet.close();
+            selectStmt.close();
+
+            String deleteQuery = "DELETE FROM employees WHERE employee_id = " + employeeId;
+            Statement deleteStmt = connection.createStatement();
+            deleteStmt.executeUpdate(deleteQuery);
+            deleteStmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return employee;
     }
+
 
     @Override
     public Employee getEmployeeById(int employeeId) {
@@ -141,18 +187,109 @@ public class EmployeeDatabaseImplementation implements EmployeeDatabaseInterface
     }
 
     @Override
-    public void updateSalaries(String division, Double percentIncrease) {
+    public List<Employee> updateDivisionSalaries(String division, Double percentIncrease, Double minimum) {
+        List<Employee> updatedEmployees = new ArrayList<>();
+        double multiplier = 1 + percentIncrease / 100;
         try {
             Statement statement = connection.createStatement();
-            double multiplier = 1 + percentIncrease / 100;
-            String sql = "UPDATE employees SET salary = salary * " + multiplier +
-                        " WHERE division = '" + division + "'";
-            statement.executeUpdate(sql);
+            String condition = "division = '" + division + "'";
+            if (minimum != null) {
+                condition += " AND salary < " + minimum;
+            }
+            String updateSql = "UPDATE employees SET salary = salary * " + multiplier + " WHERE " + condition;
+            statement.executeUpdate(updateSql);
+            String selectSql = "SELECT * FROM employees WHERE " + condition;
+            ResultSet resultSet = statement.executeQuery(selectSql);
+
+            while (resultSet.next()) {
+                Employee emp = new Employee(
+                    resultSet.getInt("employee_id"),
+                    resultSet.getString("first_name"),
+                    resultSet.getString("last_name"),
+                    resultSet.getString("ssn"),
+                    resultSet.getString("job_title"),
+                    resultSet.getString("division"),
+                    resultSet.getDouble("salary")
+                );
+                updatedEmployees.add(emp);
+            }
+            resultSet.close();
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
-        } 
+        }
+        return updatedEmployees;
     }
 
+    @Override
+    public List<Employee> updateJobTitleSalaries(String jobTitle, Double percentIncrease, Double minimum) {
+        List<Employee> updatedEmployees = new ArrayList<>();
+        double multiplier = 1 + percentIncrease / 100;
+        try {
+            Statement statement = connection.createStatement();
+            String condition = "job_title = '" + jobTitle + "'";
+            if (minimum != null) {
+                condition += " AND salary < " + minimum;
+            }
+            String updateSql = "UPDATE employees SET salary = salary * " + multiplier + " WHERE " + condition;
+            statement.executeUpdate(updateSql);
+            String selectSql = "SELECT * FROM employees WHERE " + condition;
+            ResultSet resultSet = statement.executeQuery(selectSql);
+            while (resultSet.next()) {
+                Employee emp = new Employee(
+                    resultSet.getInt("employee_id"),
+                    resultSet.getString("first_name"),
+                    resultSet.getString("last_name"),
+                    resultSet.getString("ssn"),
+                    resultSet.getString("job_title"),
+                    resultSet.getString("division"),
+                    resultSet.getDouble("salary")
+                );
+                updatedEmployees.add(emp);
+            }
+            resultSet.close();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return updatedEmployees;
+    }
+
+    @Override
+    public List<Employee> updateAllSalaries(Double percentIncrease, Double minimum) {
+        List<Employee> updatedEmployees = new ArrayList<>();
+        double multiplier = 1 + percentIncrease / 100;
+        try {
+            Statement statement = connection.createStatement();
+            String condition = "1=1";
+            if (minimum != null) {
+                condition = "salary < " + minimum;
+            }
+            String updateSql = "UPDATE employees SET salary = salary * " + multiplier + " WHERE " + condition;
+            statement.executeUpdate(updateSql);
+            String selectSql = "SELECT * FROM employees WHERE " + condition;
+            ResultSet resultSet = statement.executeQuery(selectSql);
+            while (resultSet.next()) {
+                Employee emp = new Employee(
+                    resultSet.getInt("employee_id"),
+                    resultSet.getString("first_name"),
+                    resultSet.getString("last_name"),
+                    resultSet.getString("ssn"),
+                    resultSet.getString("job_title"),
+                    resultSet.getString("division"),
+                    resultSet.getDouble("salary")
+                );
+                updatedEmployees.add(emp);
+            }
+            resultSet.close();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return updatedEmployees;
+    }
+
+    @Override
     public List<Employee> searchEmployee(Integer id, String ssn, String firstName, String lastName) {
         List<Employee> employees = new ArrayList<>();
         PreparedStatement statement = null;

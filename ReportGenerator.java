@@ -76,39 +76,70 @@ public class ReportGenerator {
             System.out.println("Matching Employees:");
             for (Employee emp : employees) {
                 System.out.println("-----------------------------------");
-                System.out.println("ID: " + emp.employeeId);
-                System.out.println("Name: " + emp.firstName + " " + emp.lastName);
-                System.out.println("SSN: " + emp.SSN);
-                System.out.println("Job Title: " + emp.jobTitle);
-                System.out.println("Division: " + emp.division);
-                System.out.println("Salary: $" + emp.salary);
+                printEmployeeInfo(emp);
             }
         }
         return employees;
     }
 
-    public void addEmployeeInfo(Employee newEmployee) {
+    public Employee addEmployeeInfo(Employee newEmployee) {
         newEmployee = db.addEmployee(newEmployee);
         System.out.println("Added the employee with info");
         System.out.println("-----------------------------------");
-        System.out.println("ID: " + newEmployee.employeeId);
-        System.out.println("Name: " + newEmployee.firstName + " " + newEmployee.lastName);
-        System.out.println("SSN: " + newEmployee.SSN);
-        System.out.println("Job Title: " + newEmployee.jobTitle);
-        System.out.println("Division: " + newEmployee.division);
-        System.out.println("Salary: $" + newEmployee.salary);
+        printEmployeeInfo(newEmployee);
+        return newEmployee;
     }
 
-    public void updatedEmployeeInfo(Employee updatedEmployee) {
-        db.updateEmployee(updatedEmployee);
+    public Employee updatedEmployeeInfo(Employee updatedEmployee) {
+        updatedEmployee = db.updateEmployee(updatedEmployee);
         System.out.println("Updated the employee with info");
         System.out.println("-----------------------------------");
-        System.out.println("ID: " + updatedEmployee.employeeId);
-        System.out.println("Name: " + updatedEmployee.firstName + " " + updatedEmployee.lastName);
-        System.out.println("SSN: " + updatedEmployee.SSN);
-        System.out.println("Job Title: " + updatedEmployee.jobTitle);
-        System.out.println("Division: " + updatedEmployee.division);
-        System.out.println("Salary: $" + updatedEmployee.salary);
+        printEmployeeInfo(updatedEmployee);
+        return updatedEmployee;
+    }
+
+    public Employee deletedEmployee(Employee deletedEmployee) {
+        deletedEmployee = db.deleteEmployee(deletedEmployee.employeeId);
+        System.out.println("Deleted the employee  with info");
+        System.out.println("-----------------------------------");
+        printEmployeeInfo(deletedEmployee);
+        return deletedEmployee;
+    }
+
+    public void printEmployeeInfo(Employee employee) {
+        System.out.println("ID: " + employee.getEmployeeId());
+        System.out.println("Name: " + employee.getFullName());
+        System.out.println("SSN: " + employee.getSSN());
+        System.out.println("Job Title: " + employee.getJobTitle());
+        System.out.println("Division: " + employee.getDivision());
+        System.out.println("Salary: $" + employee.getSalary());
+    }
+
+    public void updateDivisionSalaries(String division, double percentIncrease, double minimum) {
+        List<Employee> employees = db.updateDivisionSalaries(division, percentIncrease, minimum);
+        System.out.println("Updated these employees in the " + division + " Division");
+        for (Employee emp : employees) {
+                System.out.println("-----------------------------------");
+                printEmployeeInfo(emp);
+        }
+    }
+
+    public void updateJobTitleSalaries(String jobTitle, double percentIncrease, double minimum) {
+        List<Employee> employees = db.updateJobTitleSalaries(jobTitle, percentIncrease, minimum);
+        System.out.println("Updated these employees with the Job Title " + jobTitle);
+        for (Employee emp : employees) {
+                System.out.println("-----------------------------------");
+                printEmployeeInfo(emp);
+        }
+    }
+
+    public void updateAllSalaries(double percentIncrease, double minimum) {
+        List<Employee> employees = db.updateAllSalaries(percentIncrease, minimum);
+        System.out.println("Updated these employee salaries");
+        for (Employee emp : employees) {
+                System.out.println("-----------------------------------");
+                printEmployeeInfo(emp);
+        }
     }
 }
 
