@@ -1,4 +1,8 @@
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -342,6 +346,84 @@ public class EmployeeDatabaseImplementation implements EmployeeDatabaseInterface
             }
         }
         return employees;
+    }
+
+    public PayStatement addPayStatement(PayStatement payStatement) {
+        String sql = "INSERT INTO paystatements (employee_id, payment_date, amount) VALUES (?, ?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            stmt.setInt(1, payStatement.getEmployeeId());
+            stmt.setString(2, payStatement.getPaymentDate());
+            stmt.setDouble(3, payStatement.getAmount());
+            int rowsInserted = stmt.executeUpdate();
+            if (rowsInserted > 0) {
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        int generatedId = generatedKeys.getInt(1);
+                        return new PayStatement(generatedId,
+                                                payStatement.getEmployeeId(),
+                                                payStatement.getPaymentDate(),
+                                                payStatement.getAmount());
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Failed to insert pay statement: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
+    public List<PayStatement> searchPayStatementsByEmployees(List<Integer> employeeIds, String date) {
+        List<PayStatement> result = new ArrayList<>();
+        if (employeeIds == null || employeeIds.isEmpty() || date == null || date.isEmpty()) {
+            return result;
+        }
+        String placeholders = String.join(",", java.util.Collections.nCopies(employeeIds.size(), "?"));
+        String sql = "SELECT payment_id, employee_id, payment_date, amount FROM paystatements " +
+                     "WHERE employee_id IN (" + placeholders + ") AND payment_date = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            int i = 0;
+            for (; i < employeeIds.size(); i++) {
+                stmt.setInt(i + 1, employeeIds.get(i));
+            }
+            stmt.setString(i + 1, date);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    int paymentId = rs.getInt("payment_id");
+                    int employeeId = rs.getInt("employee_id");
+                    String paymentDate = rs.getString("payment_date");
+                    double amount = rs.getDouble("amount");
+                    PayStatement ps = new PayStatement(paymentId, employeeId, paymentDate, amount);
+                    result.add(ps);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Failed to search pay statements by employees and date: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public List<PayStatement> searchPayStatementsByDate(String date) {
+        List<PayStatement> result = new ArrayList<>();
+        String sql = "SELECT payment_id, employee_id, payment_date, amount FROM paystatements WHERE payment_date = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, date);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    int paymentId = rs.getInt("payment_id");
+                    int employeeId = rs.getInt("employee_id");
+                    String paymentDate = rs.getString("payment_date");
+                    double amount = rs.getDouble("amount");
+                    PayStatement ps = new PayStatement(paymentId, employeeId, paymentDate, amount);
+                    result.add(ps);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Failed to search pay statements by date: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return result;
     }
 
 }

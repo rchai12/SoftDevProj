@@ -4,6 +4,12 @@ public class PayStatement {
     private String paymentDate;
     private double amount;
 
+    public PayStatement(int employeeId, String paymentDate, double amount) {
+        this.employeeId = employeeId;
+        this.paymentDate = paymentDate;
+        this.amount = amount;
+    }
+
     // Constructor to initialize PayStatement fields
     public PayStatement(int paymentId, int employeeId, String paymentDate, double amount) {
         this.paymentId = paymentId;
@@ -13,14 +19,14 @@ public class PayStatement {
     }
 
     // Method to print a formatted version of the pay statement
-    public void printPayStatement() {
+    /*public void printPayStatement() {
         System.out.println("========== PAY STATEMENT ==========");
         System.out.println("Payment ID   : " + paymentId);
         System.out.println("Employee ID  : " + employeeId);
         System.out.println("Payment Date : " + paymentDate);
         System.out.println("Amount Paid  : $" + String.format("%.2f", amount));
         System.out.println("===================================");
-    }
+    }*/
 
     // Optional: Getters in case you want to access this data elsewhere
     public int getPaymentId() {

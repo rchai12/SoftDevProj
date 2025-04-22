@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 
 public class ReportGenerator {
@@ -10,22 +11,22 @@ public class ReportGenerator {
     }
 
     // Generates a simple pay history for a single employee
-    public void generatePayHistory(int employeeId) {
+    public void generateSalaryHistory(int employeeId) {
         Employee emp = db.getEmployeeById(employeeId); // Fetch employee info
         if (emp != null) {
-            System.out.println("=== Pay History for " + emp.getFullName() + " ===");
+            System.out.println("=== Salary History for " + emp.getFullName() + " ===");
             System.out.println("Job Title: " + emp.getJobTitle());
             System.out.println("Division: " + emp.getDivision());
             System.out.println("Current Salary: $" + emp.getSalary());
-            System.out.println("(Pay history details would be listed here if stored separately)");
+            System.out.println("(Salary history details would be listed here if stored separately)");
         } else {
             System.out.println("Employee not found.");
         }
     }
 
     // Generates total salary report grouped by job title for a given month
-    public void generatePayByJobTitle(String month) {
-        System.out.println("=== Pay by Job Title for " + month + " ===");
+    public void generateSalaryByJobTitle(String month) {
+        System.out.println("=== Salary by Job Title for " + month + " ===");
 
         // Hardcoded job titles to simulate a real report
         String[] jobTitles = {
@@ -65,8 +66,8 @@ public class ReportGenerator {
     }
 
     // Generates total salary report grouped by division for a given month
-    public void generatePayByDivision(String month) {
-        System.out.println("=== Pay by Division for " + month + " ===");
+    public void generateSalaryByDivision(String month) {
+        System.out.println("=== Salary by Division for " + month + " ===");
 
         // Hardcoded divisions
         String[] divisions = {
@@ -171,6 +172,75 @@ public class ReportGenerator {
         for (Employee emp : employees) {
                 System.out.println("-----------------------------------");
                 printEmployeeInfo(emp);
+        }
+    }
+
+    // Method to print a formatted version of the pay statement
+    public void printPayStatement(PayStatement payStatement) {
+        System.out.println("========== PAY STATEMENT ==========");
+        System.out.println("Payment ID   : " + payStatement.getPaymentId());
+        System.out.println("Employee ID  : " + payStatement.getEmployeeId());
+        System.out.println("Payment Date : " + payStatement.getPaymentDate());
+        System.out.println("Amount Paid  : $" + String.format("%.2f", payStatement.getAmount()));
+        System.out.println("===================================");
+    }
+
+    public void generatePayStatement(Employee employee, String date) {
+        PayStatement payStatement = new PayStatement(employee.getEmployeeId(), date, employee.getSalary());
+        payStatement = db.addPayStatement(payStatement);
+        printPayStatement(payStatement);
+    }
+
+    public void retrievePayStatementsByDate(String date) {
+        List<PayStatement> payStatements = db.searchPayStatementsByDate(date);
+        for (PayStatement ps: payStatements) {
+            printPayStatement(ps);
+        }
+    }
+
+    public void retrievePayStatementsByEmployees(List<Integer> employeeIds, String date) {
+        List<PayStatement> payStatements = db.searchPayStatementsByEmployees(employeeIds, date);
+        for (PayStatement ps: payStatements) {
+            printPayStatement(ps);
+        }
+    }
+
+    public void retrievePayStatementsByDivision(String division, String date) {
+        List<Employee> employees = db.searchByDivisionAndTitle("%", division);
+        List<Integer> employeeIds = new ArrayList<>();
+        for (Employee e : employees) {
+            employeeIds.add(e.getEmployeeId());
+        }
+        retrievePayStatementsByEmployees(employeeIds, date);
+    }
+
+    public void retrievePayStatementsByJobTitle(String jobTitle, String date) {
+        List<Employee> employees = db.searchByDivisionAndTitle(jobTitle, "%");
+        List<Integer> employeeIds = new ArrayList<>();
+        for (Employee e : employees) {
+            employeeIds.add(e.getEmployeeId());
+        }
+        retrievePayStatementsByEmployees(employeeIds, date);
+    }
+
+    public void generatePayStatements(String date) {
+        List<Employee> employees = db.searchEmployee(null, null, null, null);
+        for (Employee e : employees) {
+            generatePayStatement(e, date);
+        }
+    }
+
+    public void generatePayStatementsByDivision(String division, String date) {
+        List<Employee> employees = db.searchByDivisionAndTitle("%", division);
+        for (Employee e : employees) {
+            generatePayStatement(e, date);
+        }
+    }
+
+    public void generatePayStatementsByJobTitle(String jobTitle, String date) {
+        List<Employee> employees = db.searchByDivisionAndTitle(jobTitle, "%");
+        for (Employee e : employees) {
+            generatePayStatement(e, date);
         }
     }
 }

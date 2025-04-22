@@ -1,3 +1,5 @@
+import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
@@ -129,22 +131,30 @@ public class UserInput {
         do {
             System.out.println("\nEmployee ID: " + employee.getEmployeeId() +" Selected Employee: " + employee.getFullName());
             System.out.println("Select one of the options:");
-            System.out.println("1 - Generate Employee's Pay History");
-            System.out.println("2 - Update Employee's Info");
-            System.out.println("3 - Update Employee's Salary");
-            System.out.println("4 - Delete the selected Employee");
-            System.out.println("5 - Go back to previous menu");
-            System.out.print("Enter your choice (1 - 5): ");
+            System.out.println("1 - Generate Employee's Pay Statement");
+            System.out.println("2- Retrieve Employee's Pay Statement");
+            System.out.println("3 - Generate Employee's Salary History");
+            System.out.println("4 - Update Employee's Info");
+            System.out.println("5 - Update Employee's Salary");
+            System.out.println("6 - Delete the selected Employee");
+            System.out.println("7 - Go back to previous menu");
+            System.out.print("Enter your choice (1 - 7): ");
             while (!scan.hasNextInt()) {
                 System.out.print("Invalid input. Please enter a number between 1 and 5: ");
                 scan.next();
             }
             choice = scan.nextInt();
+            String date;
             switch (choice) {
-                case 1: reportGenerator.generatePayHistory(employee.getEmployeeId()); break;
-                case 2: employee = updateEmployeeFromInput(employee); break;
-                case 3: employee = updateEmployeeSalary(employee); break;
-                case 4: System.out.print("Are you sure you want to delete this employee? (y/n): ");
+                case 1: date = getMonth() + " " + String.valueOf(LocalDate.now().getYear());
+                        reportGenerator.generatePayStatement(employee, date); break;
+                case 2: date = selectMonthAndYear();
+                        List<Integer> employeeIds = Collections.singletonList(employee.getEmployeeId());
+                        reportGenerator.retrievePayStatementsByEmployees(employeeIds, date); break;
+                case 3: reportGenerator.generateSalaryHistory(employee.getEmployeeId()); break;
+                case 4: employee = updateEmployeeFromInput(employee); break;
+                case 5: employee = updateEmployeeSalary(employee); break;
+                case 6: System.out.print("Are you sure you want to delete this employee? (y/n): ");
                         String confirm = scan.nextLine().trim().toLowerCase();
                         if (confirm.equals("y")) {
                             employee = reportGenerator.deletedEmployee(employee);
@@ -154,10 +164,10 @@ public class UserInput {
                             System.out.println("Deletion canceled.");
                         }
                         break;
-                case 5: System.out.println("Returning to previous menu..."); break;
+                case 7: System.out.println("Returning to previous menu..."); break;
                 default: System.out.println("Invalid choice. Please enter a number between 1 and 5.");
              }
-        } while (choice != 5);
+        } while (choice != 7);
     }
 
     public Employee updateEmployeeSalary(Employee employee) {
@@ -176,11 +186,12 @@ public class UserInput {
             System.out.println("Select one of the options:");
             System.out.println("1 - Search an Employee and perform an Employee action");
             System.out.println("2 - Add an Employee");
-            System.out.println("3 - Generate Pay History by Employee Job Titles");
-            System.out.println("4 - Generate Pay History by Employee Divisions");
-            System.out.println("5 - Update a group of Employee Salaries");
-            System.out.println("6 - Exit the program");
-            System.out.print("Enter your choice (1 - 6): ");
+            System.out.println("3 - Pay Statements Actions for Groups of Employees");
+            System.out.println("5 - Generate Salary History by Employee Job Titles");
+            System.out.println("6 - Generate SalaryHistory by Employee Divisions");
+            System.out.println("7 - Update a group of Employee Salaries");
+            System.out.println("8 - Exit the program");
+            System.out.print("Enter your choice (1 - 8): ");
             while (!scan.hasNextInt()) {
                 System.out.print("Invalid input. Please enter a number between 1 and 5: ");
                 scan.next();
@@ -189,13 +200,75 @@ public class UserInput {
             switch (choice) {
                 case 1: handleEmployee(); break;
                 case 2: addEmployeeInfo(); break;
-                case 3: reportGenerator.generatePayByJobTitle(getMonth()); break;
-                case 4: reportGenerator.generatePayByDivision(getMonth());; break;
-                case 5: handleSalaryUpdate(); break;
-                case 6: System.out.println("Exiting the program. Goodbye!"); break;
+                case 3: payStatementActions(); break;
+                case 4: reportGenerator.generateSalaryByJobTitle(getMonth()); break;
+                case 5: reportGenerator.generateSalaryByDivision(getMonth());; break;
+                case 6: handleSalaryUpdate(); break;
+                case 7: System.out.println("Exiting the program. Goodbye!"); break;
                 default: System.out.println("Invalid choice. Please enter a number between 1 and 5.");
             }
-        } while (choice != 6);
+        } while (choice != 7);
+    }
+
+    public void payStatementActions() {
+        Scanner scan = new Scanner(System.in);
+        int choice;
+        do {
+            System.out.println("Select one of the options:");
+            System.out.println("1 - Generate Pay Statements for all employees");
+            System.out.println("2 - Generate Pay Statements for employees in a division");
+            System.out.println("3 - Generate pay statements for employees with a certain Job Title");
+            System.out.println("4 - Retrieve Pay Statements for all employees");
+            System.out.println("5 - Retrieve Pay Statements for employees in a division");
+            System.out.println("6 - Retrieve pay statements for employees with a certain Job Title");
+            System.out.println("7 - Go back to previous menu");
+            System.out.print("Enter your choice (1 - 7): ");
+            while (!scan.hasNextInt()) {
+                System.out.print("Invalid input. Please enter a number between 1 and 12: ");
+                scan.next();
+            }
+            choice = scan.nextInt();
+            switch (choice) {
+                case 1: makeAllPayStatements(); break;
+                case 2: makePayStatementByDivision(); break;
+                case 3: makePayStatementByJobTitle(); break;
+                case 4: getAllPayStatements(); break;
+                case 5: getPayStatementByDivision(); break;
+                case 6: getPayStatementByJobTitle(); break;
+                case 7: System.out.println("Returning to previous menu..."); break;
+                default: System.out.println("Invalid choice. Please enter a number between 1 and 4.");
+            }
+        } while(choice != 7);
+    }
+
+    public void makeAllPayStatements() {
+        String date = selectMonthAndYear();
+        reportGenerator.generatePayStatements(date);
+    }
+
+    public void makePayStatementByDivision() {
+        String date = selectMonthAndYear(), division = selectDivision();
+        reportGenerator.generatePayStatementsByDivision(division, date);
+    }
+
+    public void makePayStatementByJobTitle() {
+        String date = selectMonthAndYear(), jobTitle = selectJobTitle();
+        reportGenerator.generatePayStatementsByJobTitle(jobTitle, date);
+    }
+
+    public void getAllPayStatements() {
+        String date = selectMonthAndYear();
+        reportGenerator.retrievePayStatementsByDate(date);
+    }
+
+    public void getPayStatementByDivision() {
+        String date = selectMonthAndYear(), division = selectDivision();
+        reportGenerator.retrievePayStatementsByDivision(division, date);
+    }
+
+    public void getPayStatementByJobTitle() {
+        String date = selectMonthAndYear(), jobTitle = selectJobTitle();
+        reportGenerator.retrievePayStatementsByJobTitle(jobTitle, date);
     }
 
     public void handleEmployee() {
@@ -427,5 +500,14 @@ public class UserInput {
             }
         } while (choice == -1);
         return division;
+    }
+
+    public String selectMonthAndYear() {
+        Scanner scan = new Scanner(System.in);
+        String month = getMonth();
+        System.out.println("Please enter the year you would like to search for: ");
+        String year = scan.nextLine();
+        String date = month + " " + year;
+        return date;
     }
 }
