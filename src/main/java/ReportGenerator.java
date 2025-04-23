@@ -185,8 +185,8 @@ public class ReportGenerator {
         System.out.println("===================================");
     }
 
-    public void generatePayStatement(Employee employee, String date) {
-        PayStatement payStatement = new PayStatement(employee.getEmployeeId(), date, employee.getSalary());
+    public void generatePayStatement(Employee employee, String date, double bonus) {
+        PayStatement payStatement = new PayStatement(employee.getEmployeeId(), date, employee.getSalary() + bonus);
         payStatement = db.addPayStatement(payStatement);
         printPayStatement(payStatement);
     }
@@ -223,24 +223,24 @@ public class ReportGenerator {
         retrievePayStatementsByEmployees(employeeIds, date);
     }
 
-    public void generatePayStatements(String date) {
+    public void generatePayStatements(String date, double bonus) {
         List<Employee> employees = db.searchEmployee(null, null, null, null);
         for (Employee e : employees) {
-            generatePayStatement(e, date);
+            generatePayStatement(e, date, bonus);
         }
     }
 
-    public void generatePayStatementsByDivision(String division, String date) {
+    public void generatePayStatementsByDivision(String division, String date, double bonus) {
         List<Employee> employees = db.searchByDivisionAndTitle("%", division);
         for (Employee e : employees) {
-            generatePayStatement(e, date);
+            generatePayStatement(e, date, bonus);
         }
     }
 
-    public void generatePayStatementsByJobTitle(String jobTitle, String date) {
+    public void generatePayStatementsByJobTitle(String jobTitle, String date, double bonus) {
         List<Employee> employees = db.searchByDivisionAndTitle(jobTitle, "%");
         for (Employee e : employees) {
-            generatePayStatement(e, date);
+            generatePayStatement(e, date, bonus);
         }
     }
 }

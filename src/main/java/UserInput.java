@@ -132,7 +132,7 @@ public class UserInput {
             System.out.println("\nEmployee ID: " + employee.getEmployeeId() +" Selected Employee: " + employee.getFullName());
             System.out.println("Select one of the options:");
             System.out.println("1 - Generate Employee's Pay Statement");
-            System.out.println("2- Retrieve Employee's Pay Statement");
+            System.out.println("2 - Retrieve Employee's Pay Statement");
             System.out.println("3 - Generate Employee's Salary History");
             System.out.println("4 - Update Employee's Info");
             System.out.println("5 - Update Employee's Salary");
@@ -147,7 +147,7 @@ public class UserInput {
             String date;
             switch (choice) {
                 case 1: date = getMonth() + " " + String.valueOf(LocalDate.now().getYear());
-                        reportGenerator.generatePayStatement(employee, date); break;
+                        reportGenerator.generatePayStatement(employee, date, bonus()); break;
                 case 2: date = selectMonthAndYear();
                         List<Integer> employeeIds = Collections.singletonList(employee.getEmployeeId());
                         reportGenerator.retrievePayStatementsByEmployees(employeeIds, date); break;
@@ -167,7 +167,7 @@ public class UserInput {
                 case 7: System.out.println("Returning to previous menu..."); break;
                 default: System.out.println("Invalid choice. Please enter a number between 1 and 5.");
              }
-        } while (choice != 7);
+        } while (choice != 8);
     }
 
     public Employee updateEmployeeSalary(Employee employee) {
@@ -187,11 +187,11 @@ public class UserInput {
             System.out.println("1 - Search an Employee and perform an Employee action");
             System.out.println("2 - Add an Employee");
             System.out.println("3 - Pay Statements Actions for Groups of Employees");
-            System.out.println("5 - Generate Salary History by Employee Job Titles");
-            System.out.println("6 - Generate SalaryHistory by Employee Divisions");
-            System.out.println("7 - Update a group of Employee Salaries");
-            System.out.println("8 - Exit the program");
-            System.out.print("Enter your choice (1 - 8): ");
+            System.out.println("4 - Generate Salary History by Employee Job Titles");
+            System.out.println("5 - Generate SalaryHistory by Employee Divisions");
+            System.out.println("6 - Update a group of Employee Salaries");
+            System.out.println("7 - Exit the program");
+            System.out.print("Enter your choice (1 - 7): ");
             while (!scan.hasNextInt()) {
                 System.out.print("Invalid input. Please enter a number between 1 and 5: ");
                 scan.next();
@@ -243,17 +243,17 @@ public class UserInput {
 
     public void makeAllPayStatements() {
         String date = selectMonthAndYear();
-        reportGenerator.generatePayStatements(date);
+        reportGenerator.generatePayStatements(date, bonus());
     }
 
     public void makePayStatementByDivision() {
         String date = selectMonthAndYear(), division = selectDivision();
-        reportGenerator.generatePayStatementsByDivision(division, date);
+        reportGenerator.generatePayStatementsByDivision(division, date, bonus());
     }
 
     public void makePayStatementByJobTitle() {
         String date = selectMonthAndYear(), jobTitle = selectJobTitle();
-        reportGenerator.generatePayStatementsByJobTitle(jobTitle, date);
+        reportGenerator.generatePayStatementsByJobTitle(jobTitle, date, bonus());
     }
 
     public void getAllPayStatements() {
@@ -509,5 +509,19 @@ public class UserInput {
         String year = scan.nextLine();
         String date = month + " " + year;
         return date;
+    }
+
+    public double bonus() {
+        Scanner scan = new Scanner(System.in);
+        System.out.println("Is there a bonus to be applied? Leave field blank to skip:");
+        String bonusLine = scan.nextLine();
+        if (!bonusLine.trim().isEmpty()) {
+            try {
+                return Double.parseDouble(bonusLine);
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid salary input. Salary not updated.");
+            }
+        }
+        return 0;
     }
 }
